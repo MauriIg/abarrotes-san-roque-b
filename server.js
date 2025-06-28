@@ -82,6 +82,14 @@ mongoose
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5003;
+import fetch from "node-fetch"; // 👈 si usas type: "module"
+
+setInterval(() => {
+  fetch("https://abarrotes-san-roque-b.up.railway.app/").catch((err) =>
+    console.error("Keep-alive failed:", err.message)
+  );
+}, 60_000); // cada 60 segundos
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
