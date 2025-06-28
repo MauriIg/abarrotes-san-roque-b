@@ -6,7 +6,7 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
-
+  
 // Configurar transporter para Nodemailer
 console.log("⛳ ENV EMAIL:", process.env.EMAIL_FROM, process.env.EMAIL_PASS);
 const transporter = nodemailer.createTransport({
