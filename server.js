@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import fetch from "node-fetch";
 
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -24,17 +23,20 @@ if (!process.env.EMAIL_FROM || !process.env.EMAIL_PASS) {
 
 const app = express();
 
-// Webhook (Stripe) - debe ir ANTES del body parser
+// Webhook (raw para Stripe)
 app.use("/api/webhook", express.raw({ type: "application/json" }), webhookRoutes);
 
-// Parsers normales
+// Parsers normales (después del webhook)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Middleware CORS
+// ✅ CORS dinámico para Vercel y localhost
+app.use
+  import cors from "cors";
+
 app.use(
   cors({
-    origin: "*", // o especifica ["https://tudominio.vercel.app"]
+    origin: true, // 🔥 ACEPTA TODO para pruebas
     credentials: true,
   })
 );
@@ -50,7 +52,7 @@ app.use("/api/stock", stockRoutes);
 app.use("/api/pedidos-proveedor", supplierOrderRoutes);
 app.use("/api/categorias", categoriaRoutes);
 
-// Ruta base
+// Ruta de prueba
 app.get("/", (req, res) => res.send("🚀 API corriendo correctamente"));
 
 // Middleware de errores
@@ -59,7 +61,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ mensaje: "Error interno", error: err.message });
 });
 
-// Conexión a MongoDB
+// Conexión a Mongo
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Conectado a MongoDB"))
@@ -68,15 +70,16 @@ mongoose
     process.exit(1);
   });
 
-// Keep alive para Railway
+// Keep alive y arranque
+import fetch from "node-fetch";
 const PORT = process.env.PORT || 5003;
+
 setInterval(() => {
-  fetch("https://abarrotes-backend.up.railway.app").catch((err) =>
+  fetch("https://abarrotes-san-roque-b-production.up.railway.app").catch((err) =>
     console.error("Keep-alive error:", err.message)
   );
 }, 60_000);
 
-// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(🚀 Servidor corriendo en puerto ${PORT});
 });
