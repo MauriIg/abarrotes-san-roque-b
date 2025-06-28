@@ -32,8 +32,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ CORS dinámico para Vercel y localhost
 
-  import cors from "cors";
-
 app.use(
   cors({
     origin: true, // 🔥 ACEPTA TODO para pruebas
