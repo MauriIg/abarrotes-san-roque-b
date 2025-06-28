@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -14,25 +15,38 @@ import supplierOrderRoutes from "./routes/supplierOrderRoutes.js";
 import categoriaRoutes from "./routes/categoriaRoutes.js";
 
 dotenv.config();
-console.log("🔍 EMAIL:", process.env.EMAIL);
 
+// ⚠️ Validación crítica para evitar errores silenciosos
+if (!process.env.EMAIL_FROM || !process.env.EMAIL_PASS) {
+  console.error("❌ ERROR: EMAIL_FROM o EMAIL_PASS no están definidos.");
+  process.exit(1);
+}
 
 const app = express();
 
+// Webhook (sin JSON parser para evitar romper firma Stripe)
+app.use("/api/webhook", express.raw({ type: "application/json" }), webhookRoutes);
 
-// Webhook primero (sin JSON parser para evitar problemas con Stripe)
-app.use("/api/webhook", express.raw({ type: 'application/json' }), webhookRoutes);
-
-
-
-// Parsers generales (deben venir después del webhook)
+// Parsers generales (después del webhook)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configuración de CORS
+// CORS: permite múltiples orígenes (Vercel y localhost)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://abarrotes-san-roque-f.vercel.app",
+  "https://abarrotes-san-roque-iyjeqzd8u-mauricios-projects-4b766890.vercel.app"
+];
+
 app.use(
   cors({
-    origin:"https://abarrotes-san-roque-f.vercel.app", // Uso de variable de entorno
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("No permitido por CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -51,23 +65,23 @@ app.use("/api/categorias", categoriaRoutes);
 // Ruta raíz de prueba
 app.get("/", (req, res) => res.send("¡Servidor funcionando! 🚀"));
 
-// Middleware para manejar errores globalmente
+// Middleware de error global
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Imprime el error en consola
+  console.error("❌ Error no manejado:", err.stack);
   res.status(500).json({ mensaje: "Algo salió mal", error: err.message });
 });
 
 // Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("Conectado a MongoDB"))
+  .then(() => console.log("✅ Conectado a MongoDB"))
   .catch((err) => {
-    console.error(" Error de conexión:", err);
-    process.exit(1); // Termina el proceso si hay un error de conexión
+    console.error("❌ Error de conexión a MongoDB:", err);
+    process.exit(1);
   });
 
-// Levantar el servidor
+// Iniciar el servidor
 const PORT = process.env.PORT || 5003;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
