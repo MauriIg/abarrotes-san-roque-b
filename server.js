@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 // Configuración de CORS
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Uso de variable de entorno
+    origin: process.env.FRONTEND_URL || "https://abarrotes-san-roque-f.vercel.app", // Uso de variable de entorno
     credentials: true,
   })
 );
