@@ -20,21 +20,23 @@ export async function crearOrden(req, res) {
     } = req.body;
    
     let estadoInicial = estado;
-
 if (!estadoInicial) {
-      if (req.usuario.rol === "cajero") {
-        estadoInicial =
-          metodoPago === "efectivo" || metodoPago === "transferencia"
-            ? ESTADOS_ORDEN.COMPLETADA
-            : ESTADOS_ORDEN.PAGADO;
-      } else {
-        estadoInicial =
-          tipoEntrega === "domicilio"
-            ? ESTADOS_ORDEN.PENDIENTE_PAGO
-            : ESTADOS_ORDEN.PENDIENTE_PAGO;
-      }
+  if (req.usuario.rol === "cajero") {
+    estadoInicial =
+      metodoPago === "efectivo" || metodoPago === "transferencia"
+        ? ESTADOS_ORDEN.COMPLETADA
+        : ESTADOS_ORDEN.PAGADO;
+  } else {
+    if (tipoEntrega === "domicilio") {
+      estadoInicial =
+        metodoPago === "efectivo"
+          ? ESTADOS_ORDEN.PENDIENTE_PAGO // 👈 esto cambia
+          : ESTADOS_ORDEN.PAGADO;
+    } else {
+      estadoInicial = ESTADOS_ORDEN.PARA_RECOGER;
     }
-
+  }
+}
 
     const rapiditoAsignado =
       tipoEntrega === "domicilio" ? await asignarRapidito() : null;
