@@ -31,7 +31,7 @@ export async function crearOrden(req, res) {
         estadoInicial =
           tipoEntrega === "domicilio"
             ? ESTADOS_ORDEN.PENDIENTE
-            : ESTADOS_ORDEN.PARA_RECOGER;
+            : ESTADOS_ORDEN.PENDIENTE_PAGO;
       }
     }
 
