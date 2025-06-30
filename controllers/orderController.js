@@ -34,7 +34,7 @@ export async function crearOrden(req, res) {
           ? ESTADOS_ORDEN.PENDIENTE_PAGO
           : ESTADOS_ORDEN.PAGADO;
     } else {
-      estadoInicial = ESTADOS_ORDEN.PENDIENTE;
+      estadoInicial = ESTADOS_ORDEN.PENDIENTE_PAGO;
     }
   }
 }
