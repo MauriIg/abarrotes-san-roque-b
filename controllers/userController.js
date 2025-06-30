@@ -150,12 +150,15 @@ const loginUser = async (req, res) => {
     }
 
     res.json({
-      _id: usuario._id,
-      nombre: usuario.nombre,
-      email: usuario.email,
-      rol: usuario.rol,
-      token: generarToken(usuario._id, usuario.rol),
-    });
+  usuario: {
+    _id: usuario._id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    rol: usuario.rol,
+  },
+  token: generarToken(usuario._id, usuario.rol),
+});
+
   } catch (error) {
     res.status(500).json({ mensaje: "Error al iniciar sesión", error });
   }
