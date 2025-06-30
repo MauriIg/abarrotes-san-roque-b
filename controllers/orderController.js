@@ -19,8 +19,6 @@ export async function crearOrden(req, res) {
       metodoPago
     } = req.body;
 
-    let estadoInicial = estado;
-
    if (!estadoInicial) {
   if (req.usuario.rol === "cajero") {
     estadoInicial =
@@ -30,14 +28,18 @@ export async function crearOrden(req, res) {
   } else {
     if (tipoEntrega === "domicilio") {
       estadoInicial =
-        metodoPago === "efectivo" || metodoPago === "transferencia"
+        metodoPago === "efectivo"
           ? ESTADOS_ORDEN.PENDIENTE_PAGO
           : ESTADOS_ORDEN.PAGADO;
     } else {
-      estadoInicial = ESTADOS_ORDEN.PENDIENTE_PAGO;
+      estadoInicial =
+        metodoPago === "efectivo"
+          ? ESTADOS_ORDEN.PARA_RECOGER
+          : ESTADOS_ORDEN.PENDIENTE_PAGO;
     }
   }
 }
+
 
     const rapiditoAsignado =
       tipoEntrega === "domicilio" ? await asignarRapidito() : null;
