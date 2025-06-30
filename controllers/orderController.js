@@ -30,7 +30,7 @@ if (!estadoInicial) {
       } else {
         estadoInicial =
           tipoEntrega === "domicilio"
-            ? ESTADOS_ORDEN.PENDIENTE
+            ? ESTADOS_ORDEN.PENDIENTE_PAGO
             : ESTADOS_ORDEN.PENDIENTE_PAGO;
       }
     }
