@@ -179,3 +179,27 @@ export async function cortarCaja(req, res) {
     res.status(500).json({ mensaje: "Error al realizar el corte de caja" });
   }
 }
+
+// Realizar corte del rapidito - eliminar órdenes finalizadas
+export async function realizarCorteRapidito(req, res) {
+  try {
+    const rapiditoId = req.params.id;
+
+    if (req.usuario.rol !== "admin") {
+      return res.status(403).json({ mensaje: "Acceso denegado" });
+    }
+
+    const resultado = await Order.deleteMany({
+      asignadoA: rapiditoId,
+      estado: ESTADOS_ORDEN.COMPLETADA,
+    });
+
+    res.json({
+      mensaje: `Se eliminaron ${resultado.deletedCount} órdenes finalizadas del rapidito.`,
+    });
+  } catch (error) {
+    console.error("Error al realizar corte del rapidito:", error);
+    res.status(500).json({ mensaje: "Error al realizar el corte del rapidito" });
+  }
+}
+

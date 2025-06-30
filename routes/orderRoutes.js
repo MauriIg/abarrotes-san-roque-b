@@ -6,6 +6,7 @@ import {
   cortarCaja
 } from "../controllers/orderController.js";
 
+import { realizarCorteRapidito } from "../controllers/orderController.js";
 import Order from "../models/Order.js";
 import { verificarUsuario, verificarAdmin } from "../middleware/authMiddleware.js";
 
@@ -164,5 +165,9 @@ router.get("/rapidito/:id", verificarAdmin, async (req, res) => {
     res.status(500).json({ mensaje: "Error al obtener órdenes del rapidito", error });
   }
 });
+
+// 12. Eliminar órdenes completadas del rapidito (solo admin)
+router.delete("/rapidito/:id/clear", verificarAdmin, realizarCorteRapidito);
+
 
 export default router;
